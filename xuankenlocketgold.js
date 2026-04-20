@@ -21,38 +21,41 @@ var subscriptionData = {
     store: "app_store"
 };
 
-var entitlementData = {
-    grace_period_expires_date: null,
-    purchase_date: "2026-01-01T00:00:00Z",
-    product_identifier: "com.locket02.premium.yearly",
-    expires_date: "2099-12-18T01:04:17Z"
-};
-
 const match = Object.keys(mapping).find(key => ua.includes(key));
 
 if (match) {
     let [entitlementId, productId] = mapping[match];
     
-    entitlementData.product_identifier = productId || "com.locket02.premium.yearly";
+    // Tạo object mới để tránh tham chiếu
+    let newEntitlementData = {
+        grace_period_expires_date: null,
+        purchase_date: "2026-01-01T00:00:00Z",
+        product_identifier: productId,
+        expires_date: "2099-12-18T01:04:17Z"
+    };
     
     obj.subscriber.subscriptions[productId] = subscriptionData;
+    obj.subscriber.entitlements[entitlementId] = newEntitlementData;
     
-    obj.subscriber.entitlements[entitlementId] = entitlementData;
-    
+    // Nếu cần thêm cả Gold
     if (entitlementId === 'vip+watch_vip') {
-        obj.subscriber.entitlements['Gold'] = entitlementData;
-        obj.subscriber.subscriptions['com.locket02.premium.yearly'] = subscriptionData;
+        let goldData = {
+            grace_period_expires_date: null,
+            purchase_date: "2026-01-01T00:00:00Z",
+            product_identifier: "com.locket02.premium.yearly",
+            expires_date: "2099-12-18T01:04:17Z"
+        };
+        obj.subscriber.entitlements['Gold'] = goldData;
     }
 } else {
+    // Mặc định
     obj.subscriber.subscriptions["com.locket02.premium.yearly"] = subscriptionData;
-    obj.subscriber.entitlements["Gold"] = entitlementData;
-}
-
-if (!obj.subscriber.entitlements["Gold"]) {
-    obj.subscriber.entitlements["Gold"] = entitlementData;
-}
-if (!obj.subscriber.subscriptions["com.locket02.premium.yearly"]) {
-    obj.subscriber.subscriptions["com.locket02.premium.yearly"] = subscriptionData;
+    obj.subscriber.entitlements["Gold"] = {
+        grace_period_expires_date: null,
+        purchase_date: "2026-01-01T00:00:00Z",
+        product_identifier: "com.locket02.premium.yearly",
+        expires_date: "2099-12-18T01:04:17Z"
+    };
 }
 
 $done({
