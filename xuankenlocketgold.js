@@ -26,7 +26,6 @@ const match = Object.keys(mapping).find(key => ua.includes(key));
 if (match) {
     let [entitlementId, productId] = mapping[match];
     
-    // Tạo object mới để tránh tham chiếu
     let newEntitlementData = {
         grace_period_expires_date: null,
         purchase_date: "2026-01-01T00:00:00Z",
@@ -37,7 +36,6 @@ if (match) {
     obj.subscriber.subscriptions[productId] = subscriptionData;
     obj.subscriber.entitlements[entitlementId] = newEntitlementData;
     
-    // Nếu cần thêm cả Gold
     if (entitlementId === 'vip+watch_vip') {
         let goldData = {
             grace_period_expires_date: null,
@@ -48,7 +46,6 @@ if (match) {
         obj.subscriber.entitlements['Gold'] = goldData;
     }
 } else {
-    // Mặc định
     obj.subscriber.subscriptions["com.locket02.premium.yearly"] = subscriptionData;
     obj.subscriber.entitlements["Gold"] = {
         grace_period_expires_date: null,
